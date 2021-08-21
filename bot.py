@@ -24,7 +24,25 @@ async def on_ready():
         print(f'< > Guild Members:\n     - {members}')
 
 
-@bot.command(name='hello' or 'Hello')
+@bot.command(name='add-note')
+async def add_note(ctx, *note: str):
+    user_id = ctx.message.author.id
+    file = open(f'./save_file/{user_id}', 'a')
+    file.writelines('\n' + ' '.join(note))
+    file.close()
+    await ctx.send("Note Saved !")
+
+
+@bot.command(name='view-note')
+async def view_note(ctx):
+    user_id = ctx.message.author.id
+    file = open(f'./save_file/{user_id}', 'r')
+    note = file.readlines()
+    note = ''.join(note)
+    await ctx.send(f"Your Note is : \n{note}")
+
+
+@bot.command(name='hello')
 async def hello(ctx):
     await ctx.send("Hello Too !!")
 
@@ -46,12 +64,12 @@ async def create_channel(ctx, channel_name: str):
     if not existing_channel:
         print(f'Creating new channel named {channel_name}')
         await guild.create_text_channel(channel_name)
+    await ctx.send(f'Channel {channel_name} created !')
 
 
-@bot.command(name='add-note', help='add text to your note')
-async def add_note(ctx, text_note: str):
-    people = ctx.user
-    ctx.send(f'{people} creating note : {text_note}')
+@bot.command(name='test')
+async def test(ctx):
+    await ctx.send('Testing \n Testing \n Testing')
 
 
 @bot.event
