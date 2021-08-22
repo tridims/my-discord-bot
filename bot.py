@@ -9,7 +9,7 @@ from discord.ext import commands
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(command_prefix='$')
 
 
 @bot.event
@@ -65,11 +65,6 @@ async def create_channel(ctx, channel_name: str):
         print(f'Creating new channel named {channel_name}')
         await guild.create_text_channel(channel_name)
     await ctx.send(f'Channel {channel_name} created !')
-
-
-@bot.command(name='test')
-async def test(ctx):
-    await ctx.send('Testing \n Testing \n Testing')
 
 
 @bot.event
