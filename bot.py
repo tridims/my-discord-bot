@@ -1,27 +1,60 @@
 import os
 import random
 import logging
+from discord.enums import ChannelType
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
+import json
+import requests
+from ChatReply import ChattingBot
 
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+HF_API_URL = 'https://api-inference.huggingface.co/models/microsoft/'
+MODEL_NAME = 'DialoGPT-large'
+HF_TOKEN = os.getenv('HUGGINGFACE_TOKEN')
+
 
 bot = commands.Bot(command_prefix='$')
+hf_chat_bot_agent = ChattingBot(HF_API_URL, MODEL_NAME, HF_TOKEN)
+
+
+@bot.event
+async def on_message(message):
+    """
+    this function is called whenever the bot sees a message in a channel
+    """
+    # ignore the message if it comes from the bot itself
+    if message.author.id == bot.user.id:
+        return
+
+    # form query payload with the content of the message
+    payload = {'inputs': {'text': message.content}}
+
+    # while the bot is waiting on a response from the model
+    # set the its status as typing for user-friendliness
+    async with message.channel.typing():
+        response = hf_chat_bot_agent.query(payload)
+    bot_response = response.get('generated_text', None)
+
+    # we may get ill-formed response if the model hasn't fully loaded
+    # or has timed out
+    if not bot_response:
+        if 'error' in response:
+            bot_response = '`Error: {}`'.format(response['error'])
+        else:
+            bot_response = 'Hmm... something is not right.'
+
+    # send the model's response to the Discord channel
+    await message.channel.send(bot_response)
 
 
 @bot.event
 async def on_ready():
-    print(f'{bot.user} has connected to Discord!')
-
-    print(f'{bot.user} Joined the following Guilds : ')
-    for guild in bot.guilds:
-        print(
-            f'<*> {guild.name} with id {guild.id} with {len(guild.members)} members')
-        members = '\n - '.join([member.name for member in guild.members])
-        print(f'< > Guild Members:\n     - {members}')
+    print('Connected to Discord!')
+    print(f'Guild list : {[guild.name for guild in bot.guilds]}')
 
 
 @bot.command(name='add-note')

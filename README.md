@@ -12,3 +12,5 @@ This is my discord bot project. The idea of this bot is that it can save notes f
 1. Creating better viewing method
 2. Function to delete specific note
 3. Implement databases
+4. Implement chatbot with huggingface api
+5. Create fake id creator using python
