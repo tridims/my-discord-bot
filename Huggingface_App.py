@@ -3,8 +3,10 @@ import json
 import requests
 
 
-class ChattingBot():
+class HuggingfaceApp():
     def __init__(self, api_url, model_name, huggingface_token):
+        """Class for utilizing hunggingface api
+        """
         self.api_endpoint = api_url + model_name
         self.request_headers = {
             'Authorization': 'Bearer {}'.format(huggingface_token)
