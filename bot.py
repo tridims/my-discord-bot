@@ -87,7 +87,7 @@ async def view_note(ctx):
     if not note:
         await ctx.send("You dont have saved notes !")
         return
-    note = ''.join(note)
+    note = "- " + '- '.join(note)
     await ctx.send(f"Your Note is : \n{note}")
 
 
